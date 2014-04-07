@@ -14,3 +14,10 @@
 Dee/Dee.opensdf
 Dee/Dee.sdf
 Dee/Dee.v12.suo
+*.tlog
+*.log
+*.pdb
+*.ilk
+Dee.exe
+Dee/Debug/vc120.idb
+*.obj
