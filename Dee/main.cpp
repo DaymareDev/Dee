@@ -11,7 +11,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	LPSTR lpCmdLine,
 	int nCmdShow)
 {
-
+	auto windowWidth = 800;
+	auto windowHeight = 600;
 	// the handle for the window, filled by a function
 	HWND hWnd;
 	// this struct holds information for the window class
@@ -31,6 +32,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// register the window class
 	RegisterClassEx(&wc);
+	RECT adjustedWindowArea = { 0, 0, windowWidth, windowHeight };
+	AdjustWindowRect(&adjustedWindowArea, WS_OVERLAPPEDWINDOW, false);
 
 	// create the window and use the result as the handle
 	hWnd = CreateWindowEx(NULL,
@@ -39,12 +42,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		WS_OVERLAPPEDWINDOW,    // window style
 		300,    // x-position of the window
 		300,    // y-position of the window
-		500,    // width of the window
-		400,    // height of the window
+		adjustedWindowArea.right - adjustedWindowArea.left,    // width of the window
+		adjustedWindowArea.bottom - adjustedWindowArea.top,    // height of the window
 		NULL,    // we have no parent window, NULL
 		NULL,    // we aren't using menus, NULL
 		hInstance,    // application handle
 		NULL);    // used with multiple windows, NULL
+	
 
 	// display the window on the screen
 	ShowWindow(hWnd, nCmdShow);
@@ -57,6 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// wait for the next message in the queue, store the result in 'msg'
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
+
 		// translate keystroke messages into the right format
 		TranslateMessage(&msg);
 
@@ -71,6 +76,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	
+
 	// sort through and find what code to run for the message given
 	switch (message)
 	{
@@ -86,3 +93,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	// Handle any messages the switch statement didn't
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
+/**
+Multimonitor stuff
+auto monitorPtr = MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY);
+LPMONITORINFO monitorInfo = 0;
+if (GetMonitorInfo(monitorPtr, monitorInfo))
+{
+auto monitorArea = monitorInfo->rcMonitor;
+auto monitorWidth = monitorArea.right - monitorArea.left;
+auto monitorHeight = monitorArea.bottom - monitorArea.top;
+auto success = SetWindowPos(hWnd, NULL,
+monitorArea.left + (monitorWidth - windowWidth) / 2,
+monitorArea.top + (monitorHeight - windowHeight) / 2,
+monitorWidth, monitorHeight, SWP_SHOWWINDOW);
+if (success != true)
+throw "fail";
+}
+
+*/
