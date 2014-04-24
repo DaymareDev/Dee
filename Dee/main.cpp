@@ -11,10 +11,10 @@ ID3D11Device *dev;                     // the pointer to our Direct3D device int
 ID3D11DeviceContext *devcon;           // the pointer to our Direct3D device context
 ID3D11RenderTargetView *backbuffer;
 
-auto windowWidth = 800;
-auto windowHeight = 600;
-
 // function prototypes
+void InitD3D(HWND hWnd);     // sets up and initializes Direct3D
+void CleanD3D(void);         // closes Direct3D and releases memory
+void RenderFrame();
 void InitD3D(HWND hWnd);     // sets up and initializes Direct3D
 void CleanD3D(void);         // closes Direct3D and releases memory
 void RenderFrame();
@@ -126,15 +126,12 @@ void InitD3D(HWND hWnd)
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 	// fill the swap chain description struct
-	scd.BufferDesc.Width = windowWidth;                    // set the back buffer width
-	scd.BufferDesc.Height = windowHeight;                  // set the back buffer height
 	scd.BufferCount = 1;                                    // one back buffer
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // how swap chain is to be used
 	scd.OutputWindow = hWnd;                                // the window to be used
 	scd.SampleDesc.Count = 4;                               // how many multisamples
 	scd.Windowed = TRUE;                                    // windowed/full-screen mode
-	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// create a device, device context and swap chain using the information in the scd struct
 	D3D11CreateDeviceAndSwapChain(NULL,
@@ -165,8 +162,8 @@ void InitD3D(HWND hWnd)
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = windowWidth;
-	viewport.Height = windowHeight;
+	viewport.Width = 800;
+	viewport.Height = 600;
 
 	devcon->RSSetViewports(1, &viewport);
 }
@@ -175,7 +172,7 @@ void RenderFrame(void)
 {
 	// clear the back buffer to a deep blue
 	devcon->ClearRenderTargetView(backbuffer, reinterpret_cast<float*>(&DirectX::XMFLOAT4(0.0f, 0.2f, 0.4f, 1.0f))); // reinterpret_cast<float*>(&DirectX::PackedVector::XMCOLOR(0.0f, 0.2f, 0.4f, 1.0f)
-	
+
 	// do 3D rendering on the back buffer here
 
 	// switch the back buffer and the front buffer
@@ -185,9 +182,12 @@ void RenderFrame(void)
 void CleanD3D()
 {
 	// close and release all existing COM objects
-	swapchain->SetFullscreenState(FALSE, NULL);
 	swapchain->Release();
 	backbuffer->Release();
+	dev->Release();
+	devcon->Release();
+}
+
 	dev->Release();
 	devcon->Release();
 }
