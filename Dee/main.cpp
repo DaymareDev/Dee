@@ -11,6 +11,9 @@ ID3D11Device *dev;                     // the pointer to our Direct3D device int
 ID3D11DeviceContext *devcon;           // the pointer to our Direct3D device context
 ID3D11RenderTargetView *backbuffer;
 
+auto windowWidth = 800;
+auto windowHeight = 600;
+
 // function prototypes
 void InitD3D(HWND hWnd);     // sets up and initializes Direct3D
 void CleanD3D(void);         // closes Direct3D and releases memory
@@ -132,6 +135,7 @@ void InitD3D(HWND hWnd)
 	scd.OutputWindow = hWnd;                                // the window to be used
 	scd.SampleDesc.Count = 4;                               // how many multisamples
 	scd.Windowed = TRUE;                                    // windowed/full-screen mode
+	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// create a device, device context and swap chain using the information in the scd struct
 	D3D11CreateDeviceAndSwapChain(NULL,
@@ -162,8 +166,8 @@ void InitD3D(HWND hWnd)
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = 800;
-	viewport.Height = 600;
+	viewport.Width = windowWidth;
+	viewport.Height = windowHeight;
 
 	devcon->RSSetViewports(1, &viewport);
 }
@@ -182,15 +186,13 @@ void RenderFrame(void)
 void CleanD3D()
 {
 	// close and release all existing COM objects
+	swapchain->SetFullscreenState(FALSE, NULL);
 	swapchain->Release();
 	backbuffer->Release();
 	dev->Release();
 	devcon->Release();
 }
 
-	dev->Release();
-	devcon->Release();
-}
 
 
 /**
